@@ -1,10 +1,8 @@
 package com.limachi.ducky_library;
 
+import net.darkhax.bookshelf.registry.RegistryHelper;
 import net.minecraft.client.Minecraft;
 import net.minecraft.entity.player.PlayerEntity;
-import net.minecraft.item.ItemGroup;
-import net.minecraft.item.ItemStack;
-import net.minecraft.item.Items;
 import net.minecraft.server.MinecraftServer;
 import net.minecraft.world.World;
 import net.minecraftforge.api.distmarker.Dist;
@@ -26,10 +24,7 @@ public class DuckyLib {
     public static final String MOD_ID = "ducky_library";
     public static final Logger LOGGER = LogManager.getLogger();
     public static DuckyLib INSTANCE;
-    public static final ItemGroup ITEM_GROUP = new ItemGroup(ItemGroup.GROUPS.length, "tab_" + MOD_ID) {
-        @Override
-        public ItemStack createIcon() { return new ItemStack(Items.ENDER_CHEST); }
-    };
+    public final RegistryHelper REGISTRY = new RegistryHelper(MOD_ID, LOGGER);
 
     public DuckyLib() {
         INSTANCE = this;
