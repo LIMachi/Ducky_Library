@@ -12,7 +12,7 @@ public class EventManager {
     private static int tick = 0;
     private static ArrayListMultimap<Integer, Runnable> pendingTasks = ArrayListMultimap.create();
 
-    public static <T> void delayedTask(int ticksToWait, Runnable run) { pendingTasks.put(ticksToWait + tick, run); }
+    public static void delayedTask(int ticksToWait, Runnable run) { pendingTasks.put(ticksToWait + tick, run); }
 
     @SubscribeEvent
     public static void onTick(TickEvent.ServerTickEvent event) {

@@ -1,0 +1,6 @@
+{
+  "parent": "block/cube_all",
+  "textures": {
+    "all": "example_mod_ducky_lib:item/rubber_ducky"
+  }
+}

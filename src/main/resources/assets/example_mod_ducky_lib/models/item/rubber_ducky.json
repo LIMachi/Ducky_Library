@@ -1,0 +1,6 @@
+{
+  "parent": "item/generated",
+  "textures": {
+    "layer0": "example_mod_ducky_lib:item/rubber_ducky"
+  }
+}

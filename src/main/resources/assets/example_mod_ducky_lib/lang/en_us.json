@@ -1,0 +1,5 @@
+{
+  "item.example_mod_ducky_lib.rubber_ducky": "rubber ducky",
+  "block.example_mod_ducky_lib.example_block": "example block",
+  "itemGroup.tab_example_mod_ducky_lib": "example mod created with ducky library"
+}

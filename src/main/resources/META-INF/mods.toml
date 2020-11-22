@@ -34,6 +34,14 @@ authors="LIMachi_" #optional
 description='''
 Library used by most of my mods
 '''
+
+[[mods]]
+modId="example_mod_ducky_lib"
+version="1.0"
+displayName="Example Ducky Mod"
+authors="LIMachi_"
+description="simple mod to demonstrate how the ducky lib works"
+
 # A dependency - use the . to indicate dependency for a specific modid. Dependencies are optional.
 [[dependencies.ducky_library]] #optional
     # the modid of the dependency
