@@ -6,10 +6,12 @@ import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.CompoundNBT;
 import net.minecraft.nbt.ListNBT;
+import net.minecraft.tags.FluidTags;
 import net.minecraft.tags.ITag;
 import net.minecraft.tags.ItemTags;
 import net.minecraft.util.ResourceLocation;
 import net.minecraft.util.math.MathHelper;
+import net.minecraftforge.fluids.FluidStack;
 import net.minecraftforge.items.IItemHandler;
 import net.minecraftforge.items.SlotItemHandler;
 
@@ -45,8 +47,8 @@ public class Inventories {
         public ItemStackIORights(boolean canInput, boolean canOutput, int minStack, int maxStack) {
             this.canInput = canInput;
             this.canOutput = canOutput;
-            this.minStack = (byte) MathHelper.clamp(minStack, 0, 64);
-            this.maxStack = (byte)MathHelper.clamp(maxStack, 0, 64);
+            this.minStack = (byte)MathHelper.clamp(minStack, 0, 64);
+            this.maxStack = (byte)MathHelper.clamp(maxStack, this.minStack, 64);
         }
 
         /**
@@ -216,6 +218,67 @@ public class Inventories {
                 return new Pair<>(slot, merge);
             }
             return new Pair<>(inSlot.copy(), toMerge.copy());
+        }
+    }
+
+    public static class TankIORights {
+        public static final TankIORights BUCKET = new TankIORights(true, true, 0, 1000);
+        public static final TankIORights INVALID = new TankIORights(false, false, 0, 0);
+
+        public boolean canInput = true;
+        public boolean canOutput = true;
+        public int minStack = 0;
+        public int maxStack = 64;
+        public boolean whiteList = false;
+//        public ArrayList<FluidTags> tags = new ArrayList<>();
+        public ArrayList<String> mods = new ArrayList<>();
+        public ArrayList<FluidStack> stacks = new ArrayList<>();
+
+        public TankIORights(boolean canInput, boolean canOutput, int minStack, int maxStack) {
+            this.canInput = canInput;
+            this.canOutput = canOutput;
+            this.minStack = Math.max(minStack, 0);
+            this.maxStack = Math.max(maxStack, this.minStack);
+        }
+
+        public boolean isFluidValid(@Nonnull FluidStack stack) {
+            return true; //TODO: implement the whitelist/blacklist system
+        }
+
+        public void readNBT(CompoundNBT nbt) {
+            if (nbt == null) nbt = new CompoundNBT();
+            minStack = NBTs.getOrDefault(nbt, "Min", nbt::getInt, 0);
+            maxStack = NBTs.getOrDefault(nbt, "Max", nbt::getInt, 0);
+            ListNBT list = nbt.getList("Tags", 10);
+//            tags = new ArrayList<>();
+//            if (list.size() != 0) {
+//                tags.ensureCapacity(list.size());
+//                NBTs.populateList(list, tags, null, t -> FluidTags.getCollection().getTagByID(new ResourceLocation(t.getString("TagResourceLocation"))));
+//            }
+            list = nbt.getList("Mods", 10);
+            mods = new ArrayList<>();
+            if (list.size() != 0) {
+                mods.ensureCapacity(list.size());
+                NBTs.populateList(list, mods, null, t -> t.getString("ModName"));
+            }
+            list = nbt.getList("Stacks", 10);
+            stacks = new ArrayList<>();
+            if (list.size() != 0) {
+                stacks.ensureCapacity(list.size());
+                NBTs.populateList(list, stacks, null, FluidStack::loadFluidStackFromNBT);
+            }
+        }
+
+        public CompoundNBT writeNBT(CompoundNBT nbt) {
+            if (nbt == null) nbt = new CompoundNBT();
+//            byte flags = flagsAsByte();
+//            if (flags != VANILLA.flagsAsByte()) nbt.putByte("Flags", flags);
+            if (minStack != 0) nbt.putInt("Min", minStack);
+            if (maxStack != 0) nbt.putInt("Max", maxStack);
+//            if (tags.size() != 0) nbt.put("Tags", NBTs.convertList(tags, null, t->NBTs.newCompound("TagResourceLocation", ItemTags.getCollection().getValidatedIdFromTag(t).toString())));
+            if (mods.size() != 0) nbt.put("Mods", NBTs.convertList(mods, null, t->NBTs.newCompound("ModName", t)));
+            if (stacks.size() != 0) nbt.put("Stacks", NBTs.convertList(stacks, null, t->t.writeToNBT(new CompoundNBT())));
+            return nbt;
         }
     }
 

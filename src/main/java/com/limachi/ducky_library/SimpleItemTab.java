@@ -1,5 +1,6 @@
 package com.limachi.ducky_library;
 
+import com.limachi.ducky_library.common.items.BaseItem;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemGroup;
 import net.minecraft.item.ItemStack;
@@ -14,5 +15,9 @@ public class SimpleItemTab {
                 return new ItemStack(icon.get());
             }
         };
+    }
+
+    public static ItemGroup create(AbstractDuckyMod mod, Class<? extends BaseItem> icon) {
+        return create("tab_" + mod.getModId(), mod.getRegistries().getGroupIcon(icon));
     }
 }

@@ -6,9 +6,31 @@ import net.minecraft.nbt.*;
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 import java.util.List;
+import java.util.Objects;
+import java.util.function.Consumer;
 import java.util.function.Function;
+import java.util.function.Supplier;
 
 public class NBTs {
+    /**
+     * create a clean copy of 'content' in 'target' (like target = content but keep the original pointer of target)
+     * @param target
+     * @param content
+     * @return
+     */
+    public static CompoundNBT replace(CompoundNBT target, CompoundNBT content) {
+        if (target == null)
+            return content;
+        for (String key : target.keySet())
+            target.remove(key);
+        for (String key : content.keySet()) {
+            INBT t = content.get(key);
+            if (t != null)
+                target.put(key, t);
+        }
+        return target;
+    }
+
     public static INBT deepMergeNBTInternal(INBT to, INBT from) {
         if (from == null)
             return to;
@@ -110,5 +132,33 @@ public class NBTs {
         if (nbt.contains(key))
             return method.apply(key);
         return def;
+    }
+
+    public static class DelegatedCompoundNBT {
+        protected final Supplier<CompoundNBT> read;
+        protected final Consumer<CompoundNBT> write;
+        protected final Function<CompoundNBT, CompoundNBT> resync;
+        protected CompoundNBT cache;
+
+        public DelegatedCompoundNBT(@Nonnull Supplier<CompoundNBT> read, @Nonnull Consumer<CompoundNBT> write, @Nonnull Function<CompoundNBT, CompoundNBT> resync) {
+            this.read = read;
+            this.cache = read.get();
+            this.write = write;
+            this.resync = resync;
+        }
+
+        public CompoundNBT read() {
+            CompoundNBT t = read.get();
+            if (!Objects.equals(t, cache)) {
+                cache = resync.apply(cache);
+                t = cache;
+            }
+            return t;
+        }
+
+        public void write(CompoundNBT w) {
+            cache = w;
+            write.accept(w);
+        }
     }
 }
